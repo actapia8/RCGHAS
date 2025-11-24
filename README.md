@@ -22,3 +22,6 @@ Este repositorio contiene la configuración de pipelines de seguridad utilizando
 
 - El repositorio debe tener **GitHub Advanced Security** habilitado en la configuración (Settings > Security & analysis).
 - Para repositorios privados, esto requiere una licencia de GHAS. Para repositorios públicos, es gratuito.
+Ultimo cambio
+
+Prueba 1
