@@ -1,0 +1,29 @@
+# CODEOWNERS - Define who reviews changes in specific areas
+# More info: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Global owners - review everything by default
+* @actapia8
+
+# Security and workflow configurations - require security team review
+/.github/workflows/ @actapia8 @security-team
+/.github/dependabot.yml @actapia8 @security-team
+/.github/CODEOWNERS @actapia8
+
+# Infrastructure as Code (if applicable)
+# /terraform/ @actapia8 @devops-team
+# /kubernetes/ @actapia8 @devops-team
+
+# Backend code (example)
+# /src/backend/ @actapia8 @backend-team
+# /api/ @actapia8 @backend-team
+
+# Frontend code (example)
+# /src/frontend/ @actapia8 @frontend-team
+# /components/ @actapia8 @frontend-team
+
+# Database migrations (example)
+# /migrations/ @actapia8 @database-team
+
+# Documentation
+/docs/ @actapia8
+README.md @actapia8

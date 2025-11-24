@@ -6,7 +6,7 @@ Este repositorio contiene la configuración completa de GitHub Advanced Security
 
 - [Workflows Configurados](#workflows-configurados)
 - [Requisitos Previos](#requisitos-previos)
-- [Configuración Detallada](#configuración-detallada)
+  - [Branch Protection Rules (CRÍTICO)](#4-️-branch-protection-rules-crítico-para-dependency-review)
 - [Flujo de Trabajo](#flujo-de-trabajo)
 - [Troubleshooting](#troubleshooting)
 
@@ -124,6 +124,58 @@ cert (certificación)
 prd (pre-producción)
   ↑
 feature/* (ramas de funcionalidades)
+```
+
+### 4. ⚠️ Branch Protection Rules (CRÍTICO para Dependency Review)
+
+**⚠️ IMPORTANTE**: Sin Branch Protection, el Dependency Review **NO es efectivo** porque los desarrolladores pueden:
+- ✅ Ver que el check falló
+- ❌ Pero hacer merge de todas formas
+
+**Para que Dependency Review sea obligatorio**, debes configurar Branch Protection:
+
+#### Configuración recomendada para `dev`, `cert`, `prd`:
+
+Ve a: **Settings** → **Branches** → **Add branch protection rule**
+
+| Configuración | Valor | Descripción |
+|---------------|-------|-------------|
+| **Branch name pattern** | `dev` | Repite para `cert` y `prd` |
+| **Require a pull request before merging** | ✅ Enabled | Obliga a crear PRs |
+| **Require approvals** | 1 | Al menos 1 aprobación requerida |
+| **Require status checks to pass** | ✅ Enabled | **CRÍTICO** |
+| **Status checks that are required** | `dependency-review` | Busca y selecciona este check |
+| **Require branches to be up to date** | ✅ Enabled | Previene conflictos |
+| **Do not allow bypassing the above settings** | ✅ Enabled | Ni admins pueden saltarlo |
+
+#### Comando para verificar si está protegida:
+
+```bash
+gh api repos/OWNER/REPO/branches/dev/protection
+```
+
+#### ¿Qué pasa sin Branch Protection?
+
+**Sin protección**:
+```
+Developer crea PR → Dependency Review falla ❌ → Developer hace merge de todas formas ✅
+```
+
+**Con protección**:
+```
+Developer crea PR → Dependency Review falla ❌ → GitHub BLOQUEA el merge 🔒
+```
+
+#### Configuración vía GitHub CLI (opcional):
+
+```bash
+# Proteger rama dev
+gh api -X PUT /repos/actapia8/RCGHAS/branches/dev/protection \
+  -f required_status_checks='{"strict":true,"contexts":["dependency-review"]}' \
+  -f required_pull_request_reviews='{"required_approving_review_count":1}' \
+  -f enforce_admins=true
+
+# Repetir para cert y prd
 ```
 
 ---
