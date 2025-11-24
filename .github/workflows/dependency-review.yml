@@ -3,13 +3,17 @@ name: 'Dependency Review'
 on:
   pull_request:
     branches: [ "dev", "cert", "prd" ]
+    # Trigger when PRs are created FROM feature branch
+    types: [opened, synchronize, reopened]
 
 permissions:
   contents: read
+  pull-requests: write  # Para comentar en PRs
 
 jobs:
   dependency-review:
     runs-on: ubuntu-latest
+    name: "Review PR from ${{ github.head_ref }} to ${{ github.base_ref }}"
     steps:
       - name: 'Checkout Repository'
         uses: actions/checkout@v4
@@ -17,5 +21,30 @@ jobs:
       - name: 'Dependency Review'
         uses: actions/dependency-review-action@v4
         with:
-          # Possible values: "critical", "high", "moderate", "low"
-          fail-on-severity: high
+          # Severidad mínima para fallar el check
+          fail-on-severity: moderate
+
+          # Falla si encuentra licencias prohibidas
+          fail-on-scopes: runtime, development
+
+          # Licencias permitidas (whitelist)
+          allow-licenses: MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC, 0BSD
+
+          # Licencias prohibidas (blacklist)
+          deny-licenses: GPL-2.0, GPL-3.0, AGPL-3.0, LGPL-2.0, LGPL-2.1, LGPL-3.0
+
+          # Comentar en el PR con el resumen
+          comment-summary-in-pr: always
+
+          # Advertir si hay dependencias sin licencia
+          warn-only: false
+
+          # Mostrar cambios de OpenSSF Scorecard
+          show-openssf-scorecard: true
+
+          # Configuración de vulnerabilidades conocidas
+          vulnerability-check: true
+
+          # Configuración de base de datos de vulnerabilidades
+          base-ref: ${{ github.event.pull_request.base.sha }}
+          head-ref: ${{ github.event.pull_request.head.sha }}
